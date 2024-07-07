@@ -13,7 +13,7 @@ import {
 import Loading from "../../components/Loading";
 
 const inputStyle = {
-  width: "50%",
+  width: "100%",
 };
 
 const defaultFormData = {
@@ -22,18 +22,6 @@ const defaultFormData = {
   message: "",
   isHuman: false,
 };
-
-/**
- * Renderizar condicionalmente o componente Loading baseado no estado isLoading
- *
- * Adicionar name e evento onChange nos componentes TextField para funcionar com o método handleChange
- *
- * Desabilitar componente Button condicionalmente com a props disabled quando isLoading for true ou o formulário não estiver válido
- *
- * Corrigir o método getAlert com renderização condicional baseada no valor de errorMessage
- *
- * Executar o método sendData quando clicar no botão Enviar
- */
 
 export default function Contact() {
   const [formData, setFormData] = useState(defaultFormData);
@@ -68,48 +56,55 @@ export default function Contact() {
   };
 
   const sendData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        "https://fast-react-api.onrender.com/contact",
-        {
-          method: "post",
-          headers: [
-            ["Accept", "application/json"],
-            ["Content-Type", "application/json"],
-          ],
-          body: JSON.stringify(formData),
+    if (isFormValid()) {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          "https://fast-react-api.onrender.com/contact",
+          {
+            method: "post",
+            headers: [
+              ["Accept", "application/json"],
+              ["Content-Type", "application/json"],
+            ],
+            body: JSON.stringify(formData),
+          }
+        );
+  
+        setIsLoading(false);
+  
+        if (response.ok) {
+          showSuccessMessage();
+          setFormData(defaultFormData);
+        } else {
+          showErrorMessage();
         }
-      );
-
-      setIsLoading(false);
-
-      if (response.ok) {
-        showSuccessMessage();
-        setFormData(defaultFormData);
-      } else {
+      } catch (error) {
+        setIsLoading(false);
         showErrorMessage();
       }
-    } catch (error) {
-      setIsLoading(false);
-      showErrorMessage();
+    } else {
+      return;
     }
+    
   };
 
   const isFormValid = () =>
-    !!(formData.name && formData.email && formData.message && formData.isHuman);
+    !!(formData.name && formData.name.length > 7 && formData.email && formData.message && formData.message.length > 7 && formData.isHuman);
 
   const getAlert = () => {
-    /** Renderizar o componente Alert correto de acordo com o valor de errorMessage */
+
     return (
       <div>
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-          Erro ao enviar mensagem
-        </Alert>
-
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          Mensagem enviada com sucesso
-        </Alert>
+        {
+          errorMessage
+          ? <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+              Erro ao enviar mensagem
+            </Alert>
+          : <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+              Mensagem enviada com sucesso
+            </Alert>
+        }
       </div>
     );
   };
@@ -117,38 +112,51 @@ export default function Contact() {
   return (
     <>
       <Snackbar
+       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={openSnackBar}
         autoHideDuration={6000}
         onClose={handleClose}
       >
         {getAlert()}
       </Snackbar>
-      <Loading />
-      <Grid container rowGap={2}>
+      { isLoading && <Loading />}
+      <Grid container spacing={2} rowGap={2} direction={"column"} sx={{mt: '40px'}}>
+      
         <Grid item xs={12}>
           <TextField
+            fullWidth
             value={formData.name}
             label="Nome"
+            helperText="Obs: O nome precisa ter no mínimo 8 caracteres."
             variant="standard"
             sx={inputStyle}
+            name="name"
+            onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
+            fullWidth
             value={formData.email}
             label="E-mail"
             variant="standard"
             sx={inputStyle}
+            name="email"
+            onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
+            fullWidth
             value={formData.message}
             label="Mensagem"
+            helperText="Obs: A mensagem precisa ter no mínimo 8 caracteres."
             variant="standard"
             multiline
             minRows={3}
             sx={inputStyle}
+            name="message"
+            onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12}>
@@ -160,7 +168,7 @@ export default function Contact() {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="outlined">Enviar</Button>
+          <Button variant="outlined" disabled={isLoading || !isFormValid()} onClick={sendData}>Enviar</Button>
         </Grid>
       </Grid>
     </>

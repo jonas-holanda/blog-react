@@ -1,6 +1,7 @@
 import { Container, CssBaseline } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import TopBar from "../TopBar";
+import Footer from "../Footer";
 
 const containerStyle = {
   minHeight: "calc(100vh - 64px)",
@@ -9,14 +10,15 @@ const containerStyle = {
   paddingBottom: "15px",
 };
 
-export default function Layout() {
+export default function Layout({onToogle}) {
   return (
     <>
       <CssBaseline />
-      <TopBar />
+      <TopBar onToogleMode={onToogle}/>
       <Container maxWidth="md" sx={containerStyle}>
         <Outlet />
       </Container>
+      <Footer />
     </>
   );
 }
