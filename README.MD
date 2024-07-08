@@ -33,7 +33,7 @@
 
 # Links do site e do guia da atividade
 
-**Link do site: []()**
+**Link do site: [https://blog-fast-react.vercel.app/](https://blog-fast-react.vercel.app/)**
 
 **Link do guia da atividade: [Acessar Guia](./GUIA_DA_ATIVIDADE.md)**
 
