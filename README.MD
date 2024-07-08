@@ -1,6 +1,6 @@
 <div align="center">
 
-# Blog criado com react, projeto final do módulo de React e Tes do curso FAST - Aceleração de Carreiras - Front-End da CESAR School
+# Blog criado com react, projeto final do módulo de React e Testes Automatizados do curso FAST - Aceleração de Carreiras - Frontend da CESAR School
 
 </div>
 
